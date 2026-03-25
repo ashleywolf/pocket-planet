@@ -11,64 +11,109 @@ body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Se
 body.dragging{cursor:grabbing}
 canvas{display:block}
 
-#ui{position:absolute;top:16px;left:16px;z-index:10;pointer-events:none}
-#title-bar{font-size:28px;font-weight:700;letter-spacing:1px;
-  text-shadow:0 0 20px rgba(100,180,255,.4);margin-bottom:4px}
-#subtitle{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:16px}
-#planet-name{font-size:15px;color:rgba(100,200,255,.7);margin-bottom:16px;font-style:italic}
+#ui{position:absolute;top:16px;left:16px;z-index:10;pointer-events:none;max-width:320px}
+#title-bar{font-size:24px;font-weight:700;letter-spacing:1px;
+  text-shadow:0 0 20px rgba(100,180,255,.4);margin-bottom:2px}
+#subtitle{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:14px}
 
-#controls{pointer-events:auto;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
+/* Search */
+#search-box{pointer-events:auto;display:flex;gap:6px;margin-bottom:14px}
+#repo-input{flex:1;padding:8px 12px;font-size:14px;font-family:inherit;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:6px;color:#fff;outline:none;transition:border-color .2s}
+#repo-input:focus{border-color:rgba(100,180,255,.5)}
+#repo-input::placeholder{color:rgba(255,255,255,.25)}
+#go-btn{padding:8px 14px;font-size:13px;font-weight:600;
+  color:#000;background:linear-gradient(135deg,#4af,#2d8);border:none;
+  border-radius:6px;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+#go-btn:hover{opacity:0.85}
+#go-btn:disabled{opacity:0.4;cursor:default}
+
+/* Repo info panel */
+#repo-panel{pointer-events:auto;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
   border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:14px 16px;
-  width:220px;opacity:0.85;transition:opacity .2s}
-#controls:hover{opacity:1}
-#controls label{display:flex;justify-content:space-between;align-items:center;
-  font-size:12px;color:rgba(255,255,255,.5);margin-bottom:8px}
-#controls label span{color:rgba(255,255,255,.7)}
-#controls input[type=range]{width:120px;height:4px;-webkit-appearance:none;
-  background:rgba(255,255,255,.12);border-radius:2px;outline:none}
-#controls input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;
-  width:12px;height:12px;border-radius:50%;background:#4af;cursor:pointer}
+  opacity:0;transition:opacity .3s;max-width:300px}
+#repo-panel.show{opacity:1}
+#repo-name{font-size:18px;font-weight:700;margin-bottom:2px;
+  color:rgba(100,200,255,.9)}
+#repo-name a{color:inherit;text-decoration:none}
+#repo-name a:hover{text-decoration:underline}
+#repo-desc{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:10px;
+  line-height:1.4;max-height:36px;overflow:hidden}
+#repo-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.stat{font-size:12px;color:rgba(255,255,255,.5)}
+.stat b{color:rgba(255,255,255,.8);font-weight:600}
+#lang-bar{height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:8px}
+#lang-bar div{height:100%;transition:width .4s}
+#lang-legend{font-size:11px;color:rgba(255,255,255,.4);line-height:1.6}
+#planet-label{font-size:13px;color:rgba(255,255,255,.3);margin-top:10px;
+  font-style:italic;border-top:1px solid rgba(255,255,255,.06);padding-top:8px}
 
-.btn{display:inline-block;padding:8px 18px;font-size:13px;font-weight:600;
-  color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-  border-radius:6px;cursor:pointer;transition:all .15s;margin-top:8px;margin-right:6px}
-.btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25)}
+/* Mappings tooltip */
+#mappings{font-size:10px;color:rgba(255,255,255,.25);margin-top:6px;line-height:1.5}
 
-#info{position:absolute;bottom:16px;left:16px;font-size:11px;color:rgba(255,255,255,.25);z-index:10}
-#fps{position:absolute;bottom:16px;right:16px;font-size:11px;color:rgba(255,255,255,.2);z-index:10}
+/* Loading state */
+#loading{display:none;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.5);
+  margin-bottom:14px}
+#loading.show{display:flex}
+.spin-sm{width:14px;height:14px;border:2px solid rgba(255,255,255,.1);
+  border-top-color:#4af;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Error */
+#error{display:none;font-size:12px;color:#f66;margin-bottom:10px;
+  background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.15);
+  border-radius:4px;padding:6px 10px}
+#error.show{display:block}
+
+/* Footer */
+#info{position:absolute;bottom:16px;left:16px;font-size:11px;
+  color:rgba(255,255,255,.2);z-index:10;max-width:400px;line-height:1.5}
+#fps{position:absolute;bottom:16px;right:16px;font-size:11px;
+  color:rgba(255,255,255,.15);z-index:10}
+
+/* Examples */
+#examples{pointer-events:auto;margin-bottom:14px}
+#examples span{font-size:11px;color:rgba(255,255,255,.25);margin-right:4px}
+.ex-link{font-size:11px;color:rgba(100,180,255,.5);cursor:pointer;
+  margin-right:8px;text-decoration:none;border-bottom:1px solid rgba(100,180,255,.15)}
+.ex-link:hover{color:rgba(100,180,255,.8)}
 </style>
 </head>
 <body>
 
 <div id="ui">
   <div id="title-bar">POCKET PLANET</div>
-  <div id="subtitle">procedural worlds from pure math</div>
-  <div id="planet-name"></div>
-  <div id="controls">
-    <label>Sea Level <span id="v-sea">0.42</span>
-      <input type="range" id="s-sea" min="0.2" max="0.7" step="0.01" value="0.42">
-    </label>
-    <label>Terrain Scale <span id="v-scale">1.0</span>
-      <input type="range" id="s-scale" min="0.3" max="3.0" step="0.05" value="1.0">
-    </label>
-    <label>Roughness <span id="v-rough">0.5</span>
-      <input type="range" id="s-rough" min="0.1" max="1.0" step="0.05" value="0.5">
-    </label>
-    <label>Cloud Density <span id="v-cloud">0.5</span>
-      <input type="range" id="s-cloud" min="0.0" max="1.0" step="0.05" value="0.5">
-    </label>
-    <label>Atmosphere <span id="v-atmo">0.7</span>
-      <input type="range" id="s-atmo" min="0.0" max="1.5" step="0.05" value="0.7">
-    </label>
-    <label>Rotation Speed <span id="v-rot">1.0</span>
-      <input type="range" id="s-rot" min="0.0" max="3.0" step="0.1" value="1.0">
-    </label>
-    <button class="btn" onclick="newPlanet()">New Planet</button>
-    <button class="btn" onclick="randomizeAll()">Randomize</button>
+  <div id="subtitle">what does your repo look like as a planet?</div>
+
+  <div id="search-box">
+    <input id="repo-input" type="text" placeholder="owner/repo" spellcheck="false" autocomplete="off">
+    <button id="go-btn" onclick="loadRepo()">Generate</button>
+  </div>
+
+  <div id="examples">
+    <span>try:</span>
+    <a class="ex-link" onclick="tryRepo('torvalds/linux')">torvalds/linux</a>
+    <a class="ex-link" onclick="tryRepo('facebook/react')">facebook/react</a>
+    <a class="ex-link" onclick="tryRepo('rust-lang/rust')">rust-lang/rust</a>
+  </div>
+
+  <div id="loading"><div class="spin-sm"></div>Fetching repo data...</div>
+  <div id="error"></div>
+
+  <div id="repo-panel">
+    <div id="repo-name"></div>
+    <div id="repo-desc"></div>
+    <div id="repo-stats"></div>
+    <div id="lang-bar"></div>
+    <div id="lang-legend"></div>
+    <div id="planet-label"></div>
+    <div id="mappings"></div>
   </div>
 </div>
 
-<div id="info">drag to orbit / scroll to zoom / zero textures, zero assets, pure GLSL</div>
+<div id="info">drag to orbit / scroll to zoom / every planet is deterministic -- same repo, same world<br>
+zero textures. zero assets. pure GLSL math. public GitHub API (no auth, 60 req/hr).</div>
 <div id="fps"></div>
 
 <script type="importmap">
@@ -85,310 +130,301 @@ import * as THREE from 'three';
 
 /* ════════════════════════════════════════════════════════
    POCKET PLANET
-   Procedural worlds from pure GLSL. No textures. No assets.
+   What does your repo look like as a planet?
+   Repo stats → planet parameters. Deterministic. Shareable.
    ════════════════════════════════════════════════════════ */
 
-// ── Noise GLSL (shared across shaders) ──
+// ── Language color palettes ──
+// Each language maps to a set of biome colors: [beach, lowland, midland, highland, peak]
+const LANG_PALETTES = {
+  JavaScript:  {lo:[0.85,0.75,0.25], mid:[0.75,0.60,0.10], hi:[0.90,0.80,0.30], accent:[1.0,0.85,0.0]},
+  TypeScript:  {lo:[0.20,0.40,0.75], mid:[0.15,0.30,0.65], hi:[0.50,0.65,0.85], accent:[0.0,0.48,1.0]},
+  Python:      {lo:[0.15,0.50,0.35], mid:[0.10,0.40,0.25], hi:[0.25,0.55,0.40], accent:[0.2,0.6,0.9]},
+  Rust:        {lo:[0.75,0.40,0.15], mid:[0.65,0.30,0.08], hi:[0.85,0.50,0.20], accent:[0.8,0.3,0.0]},
+  Go:          {lo:[0.15,0.60,0.60], mid:[0.10,0.50,0.55], hi:[0.30,0.70,0.65], accent:[0.0,0.68,0.68]},
+  Ruby:        {lo:[0.70,0.15,0.20], mid:[0.60,0.08,0.15], hi:[0.80,0.25,0.30], accent:[0.8,0.1,0.2]},
+  Java:        {lo:[0.55,0.35,0.15], mid:[0.45,0.28,0.10], hi:[0.60,0.40,0.20], accent:[0.6,0.3,0.1]},
+  'C++':       {lo:[0.40,0.40,0.50], mid:[0.30,0.32,0.42], hi:[0.55,0.55,0.60], accent:[0.4,0.4,0.6]},
+  C:           {lo:[0.45,0.45,0.50], mid:[0.35,0.35,0.40], hi:[0.55,0.55,0.55], accent:[0.5,0.5,0.5]},
+  'C#':        {lo:[0.35,0.20,0.55], mid:[0.28,0.15,0.48], hi:[0.50,0.35,0.65], accent:[0.5,0.2,0.8]},
+  Swift:       {lo:[0.90,0.45,0.25], mid:[0.80,0.35,0.15], hi:[0.95,0.55,0.30], accent:[1.0,0.4,0.2]},
+  Kotlin:      {lo:[0.50,0.30,0.70], mid:[0.40,0.20,0.60], hi:[0.60,0.40,0.80], accent:[0.6,0.3,0.9]},
+  PHP:         {lo:[0.30,0.25,0.55], mid:[0.25,0.18,0.50], hi:[0.45,0.38,0.65], accent:[0.5,0.4,0.9]},
+  Shell:       {lo:[0.20,0.50,0.20], mid:[0.15,0.40,0.15], hi:[0.30,0.55,0.25], accent:[0.2,0.6,0.2]},
+  Scala:       {lo:[0.70,0.20,0.20], mid:[0.60,0.12,0.12], hi:[0.80,0.30,0.30], accent:[0.8,0.2,0.2]},
+  Dart:        {lo:[0.15,0.55,0.70], mid:[0.10,0.45,0.60], hi:[0.30,0.65,0.80], accent:[0.0,0.6,0.8]},
+  Elixir:      {lo:[0.40,0.20,0.50], mid:[0.35,0.12,0.45], hi:[0.55,0.30,0.60], accent:[0.5,0.2,0.7]},
+  Haskell:     {lo:[0.40,0.30,0.50], mid:[0.35,0.22,0.48], hi:[0.55,0.42,0.60], accent:[0.5,0.3,0.6]},
+  Lua:         {lo:[0.10,0.10,0.50], mid:[0.05,0.05,0.40], hi:[0.20,0.20,0.60], accent:[0.0,0.0,0.6]},
+  Vue:         {lo:[0.20,0.60,0.40], mid:[0.15,0.55,0.30], hi:[0.30,0.70,0.45], accent:[0.2,0.7,0.4]},
+  Zig:         {lo:[0.90,0.65,0.15], mid:[0.80,0.55,0.08], hi:[0.95,0.75,0.25], accent:[0.9,0.6,0.1]},
+};
+const DEFAULT_PALETTE = {lo:[0.25,0.45,0.25], mid:[0.15,0.35,0.15], hi:[0.35,0.50,0.30], accent:[0.3,0.5,0.3]};
+
+// GitHub language colors (for the bar)
+const LANG_COLORS = {
+  JavaScript:'#f1e05a',TypeScript:'#3178c6',Python:'#3572a5',Rust:'#dea584',
+  Go:'#00add8',Ruby:'#701516',Java:'#b07219','C++':'#f34b7d',C:'#555555',
+  'C#':'#178600',Swift:'#f05138',Kotlin:'#a97bff',PHP:'#4f5d95',Shell:'#89e051',
+  Scala:'#c22d40',Dart:'#00b4ab',Elixir:'#6e4a7e',Haskell:'#5e5086',
+  Lua:'#000080',Vue:'#41b883',Zig:'#ec915c',HTML:'#e34c26',CSS:'#563d7c',
+  SCSS:'#c6538c',Markdown:'#083fa1',Jupyter:'#f37626',R:'#198ce7',
+  Perl:'#0298c3',Clojure:'#db5855',Erlang:'#b83998',OCaml:'#3be133',
+  Nix:'#7e7eff',HCL:'#844fba',Dockerfile:'#384d54',Makefile:'#427819',
+  default:'#888'
+};
+
+// ── Deterministic hash from string ──
+function hashStr(s){
+  let h=0;
+  for(let i=0;i<s.length;i++){
+    h=((h<<5)-h)+s.charCodeAt(i);
+    h|=0;
+  }
+  return Math.abs(h);
+}
+function seedFromName(name){
+  return (hashStr(name)%100000)/100;
+}
+
+// ── Map repo stats to planet params ──
+function mapRepoToPlanet(repo, languages){
+  const seed=seedFromName(repo.full_name);
+  const stars=repo.stargazers_count||0;
+  const forks=repo.forks_count||0;
+  const issues=repo.open_issues_count||0;
+  const sizeKB=repo.size||0;
+  const ageMs=Date.now()-new Date(repo.created_at).getTime();
+  const ageDays=ageMs/(1000*60*60*24);
+
+  // Stars → terrain scale (log scale, 0 stars=0.5, 1K=1.2, 10K=1.8, 100K+=2.5)
+  const terrainScale=0.5+Math.min(2.0, Math.log10(Math.max(stars,1)+1)*0.55);
+
+  // Forks → roughness (more forks = more rugged terrain)
+  const roughness=0.2+Math.min(0.6, Math.log10(Math.max(forks,1)+1)*0.18);
+
+  // Issues → sea level (more issues = more water... drowning in issues)
+  const seaLevel=0.32+Math.min(0.25, Math.log10(Math.max(issues,1)+1)*0.06);
+
+  // Size → atmosphere (bigger codebase = thicker atmosphere)
+  const atmo=0.3+Math.min(0.9, Math.log10(Math.max(sizeKB,1)+1)*0.15);
+
+  // Age → rotation speed (older = slower, more dignified)
+  const rotSpeed=Math.max(0.3, 2.0-ageDays/2000);
+
+  // Cloud density from contributor-like signals (forks + issues as proxy)
+  const activity=forks+issues;
+  const clouds=0.1+Math.min(0.7, Math.log10(Math.max(activity,1)+1)*0.2);
+
+  // Language palette
+  const langEntries=Object.entries(languages||{}).sort((a,b)=>b[1]-a[1]);
+  const primaryLang=langEntries.length>0?langEntries[0][0]:null;
+  const palette=LANG_PALETTES[primaryLang]||DEFAULT_PALETTE;
+
+  // Mix in secondary language if present
+  let mixedPalette={...palette};
+  if(langEntries.length>=2){
+    const secLang=langEntries[1][0];
+    const secPalette=LANG_PALETTES[secLang]||DEFAULT_PALETTE;
+    const secPct=langEntries[1][1]/(langEntries[0][1]+langEntries[1][1]);
+    const mix=(a,b,t)=>a.map((v,i)=>v*(1-t)+b[i]*t);
+    mixedPalette={
+      lo:mix(palette.lo,secPalette.lo,secPct*0.4),
+      mid:mix(palette.mid,secPalette.mid,secPct*0.4),
+      hi:mix(palette.hi,secPalette.hi,secPct*0.3),
+      accent:mix(palette.accent,secPalette.accent,secPct*0.3)
+    };
+  }
+
+  return {
+    seed, terrainScale, roughness, seaLevel, atmo, rotSpeed, clouds,
+    palette:mixedPalette, primaryLang, langEntries
+  };
+}
+
+// ── Noise GLSL ──
 const NOISE_GLSL = `
 vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 permute(vec4 x){return mod289(((x*34.0)+10.0)*x);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
-
 float snoise(vec3 v){
-  const vec2 C=vec2(1.0/6.0,1.0/3.0);
-  const vec4 D=vec4(0.0,0.5,1.0,2.0);
-  vec3 i=floor(v+dot(v,C.yyy));
-  vec3 x0=v-i+dot(i,C.xxx);
-  vec3 g=step(x0.yzx,x0.xyz);
-  vec3 l=1.0-g;
-  vec3 i1=min(g.xyz,l.zxy);
-  vec3 i2=max(g.xyz,l.zxy);
-  vec3 x1=x0-i1+C.xxx;
-  vec3 x2=x0-i2+C.yyy;
-  vec3 x3=x0-D.yyy;
+  const vec2 C=vec2(1.0/6.0,1.0/3.0);const vec4 D=vec4(0.0,0.5,1.0,2.0);
+  vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);
+  vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.0-g;
+  vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);
+  vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;
   i=mod289(i);
   vec4 p=permute(permute(permute(
-    i.z+vec4(0.0,i1.z,i2.z,1.0))
-    +i.y+vec4(0.0,i1.y,i2.y,1.0))
+    i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))
     +i.x+vec4(0.0,i1.x,i2.x,1.0));
-  float n_=0.142857142857;
-  vec3 ns=n_*D.wyz-D.xzx;
+  float n_=0.142857142857;vec3 ns=n_*D.wyz-D.xzx;
   vec4 j=p-49.0*floor(p*ns.z*ns.z);
-  vec4 x_=floor(j*ns.z);
-  vec4 y_=floor(j-7.0*x_);
-  vec4 x=x_*ns.x+ns.yyyy;
-  vec4 y=y_*ns.x+ns.yyyy;
+  vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);
+  vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;
   vec4 h=1.0-abs(x)-abs(y);
-  vec4 b0=vec4(x.xy,y.xy);
-  vec4 b1=vec4(x.zw,y.zw);
-  vec4 s0=floor(b0)*2.0+1.0;
-  vec4 s1=floor(b1)*2.0+1.0;
+  vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);
+  vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;
   vec4 sh=-step(h,vec4(0.0));
-  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
-  vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
-  vec3 p0=vec3(a0.xy,h.x);
-  vec3 p1=vec3(a0.zw,h.y);
-  vec3 p2=vec3(a1.xy,h.z);
-  vec3 p3=vec3(a1.zw,h.w);
+  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+  vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);
+  vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
   vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
   p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
   vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);
   m=m*m;
   return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
 }
-
-float fbm(vec3 p, float octaves, float roughness){
-  float val=0.0,amp=0.5,freq=1.0;
-  for(float i=0.0;i<8.0;i++){
-    if(i>=octaves)break;
-    val+=amp*snoise(p*freq);
-    freq*=2.0;
-    amp*=roughness;
-  }
-  return val;
-}
-`;
-
-// ── Planet Surface Shader ──
-const planetVert = `
-varying vec3 vNormal;
-varying vec3 vPosition;
-void main(){
-  vNormal=normalize(normalMatrix*normal);
-  vPosition=(modelMatrix*vec4(position,1.0)).xyz;
-  gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
+float fbm(vec3 p,float oct,float rough){
+  float v=0.0,a=0.5,f=1.0;
+  for(float i=0.0;i<8.0;i++){if(i>=oct)break;v+=a*snoise(p*f);f*=2.0;a*=rough;}
+  return v;
 }`;
 
-const planetFrag = `
-${NOISE_GLSL}
-uniform float uTime;
-uniform float uSeed;
-uniform float uSeaLevel;
-uniform float uTerrainScale;
-uniform float uRoughness;
-uniform vec3 uSunDir;
+// ── Planet Shader ──
+const planetVert=`varying vec3 vN,vP;
+void main(){vN=normalize(normalMatrix*normal);vP=(modelMatrix*vec4(position,1.0)).xyz;
+gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
 
-varying vec3 vNormal;
-varying vec3 vPosition;
-
+const planetFrag=`${NOISE_GLSL}
+uniform float uTime,uSeed,uSeaLevel,uTerrainScale,uRoughness;
+uniform vec3 uSunDir,uColorLo,uColorMid,uColorHi,uColorAccent;
+varying vec3 vN,vP;
 void main(){
-  vec3 p=normalize(vPosition)*uTerrainScale+vec3(uSeed);
-  float n=fbm(p*1.8, 6.0, uRoughness)*0.5+0.5;
-
+  vec3 p=normalize(vP)*uTerrainScale+vec3(uSeed);
+  float n=fbm(p*1.8,6.0,uRoughness)*0.5+0.5;
   vec3 color;
-  float seaLevel=uSeaLevel;
-
-  if(n<seaLevel){
-    float depth=(seaLevel-n)/seaLevel;
-    vec3 deepSea=vec3(0.01,0.03,0.15);
-    vec3 shallow=vec3(0.02,0.15,0.35);
-    color=mix(shallow,deepSea,depth);
-    // Specular highlight on water
-    vec3 viewDir=normalize(cameraPosition-vPosition);
-    vec3 halfDir=normalize(uSunDir+viewDir);
-    float spec=pow(max(dot(vNormal,halfDir),0.0),80.0);
-    color+=vec3(spec*0.4);
+  if(n<uSeaLevel){
+    float d=(uSeaLevel-n)/uSeaLevel;
+    vec3 deep=vec3(0.01,0.03,0.15);
+    vec3 shallow=vec3(0.02,0.12,0.30)+uColorAccent*0.1;
+    color=mix(shallow,deep,d);
+    vec3 vd=normalize(cameraPosition-vP);
+    vec3 hd=normalize(uSunDir+vd);
+    color+=vec3(pow(max(dot(vN,hd),0.0),80.0)*0.4);
   }else{
-    float h=(n-seaLevel)/(1.0-seaLevel);
-    vec3 beach=vec3(0.76,0.70,0.50);
-    vec3 grass=vec3(0.15,0.45,0.12);
-    vec3 forest=vec3(0.08,0.28,0.06);
-    vec3 rock=vec3(0.35,0.30,0.25);
+    float h=(n-uSeaLevel)/(1.0-uSeaLevel);
+    vec3 beach=uColorAccent*0.8+vec3(0.2);
     vec3 snow=vec3(0.9,0.92,0.95);
-
-    if(h<0.02) color=mix(beach,grass,h/0.02);
-    else if(h<0.25) color=mix(grass,forest,(h-0.02)/0.23);
-    else if(h<0.55) color=mix(forest,rock,(h-0.25)/0.3);
-    else if(h<0.75) color=mix(rock,snow,(h-0.55)/0.2);
+    if(h<0.03) color=mix(beach,uColorLo,h/0.03);
+    else if(h<0.25) color=mix(uColorLo,uColorMid,(h-0.03)/0.22);
+    else if(h<0.55) color=mix(uColorMid,uColorHi,(h-0.25)/0.3);
+    else if(h<0.75) color=mix(uColorHi,snow*0.7+uColorHi*0.3,(h-0.55)/0.2);
     else color=snow;
-
-    // Detail noise on land
-    float detail=snoise(p*8.0+vec3(uSeed*3.7))*0.08;
-    color+=detail;
+    color+=snoise(p*8.0+vec3(uSeed*3.7))*0.06;
   }
-
-  // Diffuse lighting
-  float NdotL=max(dot(vNormal,uSunDir),0.0);
-  float ambient=0.08;
-  color*=(ambient+NdotL*0.92);
-
-  // Night side city lights
-  if(NdotL<0.05 && n>=seaLevel){
-    float cityNoise=snoise(p*25.0+vec3(uSeed*7.3));
-    float city=smoothstep(0.55,0.7,cityNoise)*smoothstep(0.05,0.0,NdotL);
-    color+=vec3(1.0,0.85,0.4)*city*0.3;
+  float NdL=max(dot(vN,uSunDir),0.0);
+  color*=(0.08+NdL*0.92);
+  if(NdL<0.05&&n>=uSeaLevel){
+    float cn=snoise(p*25.0+vec3(uSeed*7.3));
+    float city=smoothstep(0.55,0.7,cn)*smoothstep(0.05,0.0,NdL);
+    color+=uColorAccent*city*0.4;
   }
-
   gl_FragColor=vec4(color,1.0);
 }`;
 
 // ── Cloud Shader ──
-const cloudVert = `
-varying vec3 vNormal;
-varying vec3 vPosition;
+const cloudVert=`varying vec3 vN,vP;
+void main(){vN=normalize(normalMatrix*normal);vP=(modelMatrix*vec4(position,1.0)).xyz;
+gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+
+const cloudFrag=`${NOISE_GLSL}
+uniform float uTime,uSeed,uCloudDensity;uniform vec3 uSunDir;
+varying vec3 vN,vP;
 void main(){
-  vNormal=normalize(normalMatrix*normal);
-  vPosition=(modelMatrix*vec4(position,1.0)).xyz;
-  gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
-}`;
-
-const cloudFrag = `
-${NOISE_GLSL}
-uniform float uTime;
-uniform float uSeed;
-uniform float uCloudDensity;
-uniform vec3 uSunDir;
-varying vec3 vNormal;
-varying vec3 vPosition;
-
-void main(){
-  vec3 p=normalize(vPosition)*2.0+vec3(uSeed*1.3);
-  p.x+=uTime*0.015;
-  p.z+=uTime*0.008;
-
-  float n=fbm(p*3.0, 5.0, 0.55)*0.5+0.5;
-  float coverage=smoothstep(1.0-uCloudDensity*0.7,1.0,n);
-
-  if(coverage<0.01) discard;
-
-  float NdotL=max(dot(vNormal,uSunDir),0.0);
-  float light=0.4+NdotL*0.6;
-  vec3 color=vec3(light);
-  color*=mix(0.15,1.0,smoothstep(0.0,0.15,NdotL));
-
-  gl_FragColor=vec4(color,coverage*0.85);
+  vec3 p=normalize(vP)*2.0+vec3(uSeed*1.3);
+  p.x+=uTime*0.015;p.z+=uTime*0.008;
+  float n=fbm(p*3.0,5.0,0.55)*0.5+0.5;
+  float cov=smoothstep(1.0-uCloudDensity*0.7,1.0,n);
+  if(cov<0.01)discard;
+  float NdL=max(dot(vN,uSunDir),0.0);
+  float light=0.4+NdL*0.6;
+  vec3 c=vec3(light)*mix(0.15,1.0,smoothstep(0.0,0.15,NdL));
+  gl_FragColor=vec4(c,cov*0.85);
 }`;
 
 // ── Atmosphere Shader ──
-const atmoVert = `
-varying vec3 vNormal;
-varying vec3 vWorldPos;
+const atmoVert=`varying vec3 vN,vW;
+void main(){vN=normalize(normalMatrix*normal);vW=(modelMatrix*vec4(position,1.0)).xyz;
+gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+
+const atmoFrag=`uniform vec3 uSunDir,uAtmoColor;uniform float uAtmoIntensity;
+varying vec3 vN,vW;
 void main(){
-  vNormal=normalize(normalMatrix*normal);
-  vWorldPos=(modelMatrix*vec4(position,1.0)).xyz;
-  gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
+  vec3 vd=normalize(cameraPosition-vW);
+  float rim=pow(1.0-max(dot(vd,vN),0.0),3.0)*uAtmoIntensity;
+  float NdL=max(dot(vN,uSunDir),0.0);
+  vec3 day=uAtmoColor;
+  vec3 sunset=vec3(1.0,0.4,0.1);
+  float sf=smoothstep(0.0,0.3,NdL)*smoothstep(0.5,0.15,NdL);
+  vec3 c=mix(day,sunset,sf);
+  c+=vec3(0.1,0.15,0.4)*rim*smoothstep(0.1,0.0,NdL)*0.15/max(rim,0.001);
+  gl_FragColor=vec4(c,rim);
 }`;
 
-const atmoFrag = `
-uniform vec3 uSunDir;
-uniform float uAtmoIntensity;
-varying vec3 vNormal;
-varying vec3 vWorldPos;
-void main(){
-  vec3 viewDir=normalize(cameraPosition-vWorldPos);
-  float rim=1.0-max(dot(viewDir,vNormal),0.0);
-  rim=pow(rim,3.0)*uAtmoIntensity;
+// ── Stars ──
+const starsVert=`varying vec2 vUv;
+void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
 
-  float NdotL=max(dot(vNormal,uSunDir),0.0);
-  vec3 dayColor=vec3(0.3,0.5,1.0);
-  vec3 sunsetColor=vec3(1.0,0.4,0.1);
-  float sunsetFactor=smoothstep(0.0,0.3,NdotL)*smoothstep(0.5,0.15,NdotL);
-  vec3 color=mix(dayColor,sunsetColor,sunsetFactor);
-
-  float nightRim=rim*smoothstep(0.1,0.0,NdotL)*0.15;
-  color+=vec3(0.1,0.15,0.4)*nightRim/max(rim,0.001);
-
-  gl_FragColor=vec4(color,rim);
-}`;
-
-// ── Star Background ──
-const starsVert = `
+const starsFrag=`${NOISE_GLSL}
 varying vec2 vUv;
 void main(){
-  vUv=uv;
-  gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
+  vec3 d=vec3(vUv*2.0-1.0,1.0);
+  float s=smoothstep(0.92,0.95,snoise(d*80.0))*(0.3+0.7*(snoise(d*120.0)*0.5+0.5));
+  float r=snoise(d*90.0+vec3(100.0))*0.5+0.5;
+  vec3 c=mix(vec3(0.8,0.85,1.0),vec3(1.0,0.9,0.7),r)*s;
+  float neb=pow(fbm(d*3.0,4.0,0.6)*0.5+0.5,4.0)*0.04;
+  c+=mix(vec3(0.2,0.05,0.3),vec3(0.05,0.1,0.3),snoise(d*5.0)*0.5+0.5)*neb;
+  gl_FragColor=vec4(c,1.0);
 }`;
-
-const starsFrag = `
-${NOISE_GLSL}
-varying vec2 vUv;
-void main(){
-  vec3 dir=vec3(vUv*2.0-1.0,1.0);
-  float n=snoise(dir*80.0);
-  float star=smoothstep(0.92,0.95,n);
-  float brightness=snoise(dir*120.0)*0.5+0.5;
-  star*=0.3+brightness*0.7;
-
-  float r=snoise(dir*90.0+vec3(100.0))*0.5+0.5;
-  vec3 color=mix(vec3(0.8,0.85,1.0),vec3(1.0,0.9,0.7),r);
-
-  float nebula=fbm(dir*3.0,4.0,0.6)*0.5+0.5;
-  nebula=pow(nebula,4.0)*0.04;
-  vec3 nebColor=mix(vec3(0.2,0.05,0.3),vec3(0.05,0.1,0.3),snoise(dir*5.0)*0.5+0.5);
-
-  vec3 final=color*star+nebColor*nebula;
-  gl_FragColor=vec4(final,1.0);
-}`;
-
-// ── Planet Name Generator ──
-const prefixes=['Zeph','Kael','Myr','Thes','Vor','Lun','Aer','Nyx','Sol','Xar',
-  'Cyr','Vel','Orth','Pyx','Draen','Hel','Fen','Gal','Nym','Ior'];
-const middles=['an','or','is','ax','un','al','ir','os','el','ar','ix','on','us'];
-const suffixes=['a','is','os','ia','um','on','ax','en','ur','yx','iel','ara','oth',
-  'Prime','Minor','Major','VII','IX','Beta','Tau'];
-function genName(){
-  const p=prefixes[Math.floor(Math.random()*prefixes.length)];
-  const m=middles[Math.floor(Math.random()*middles.length)];
-  const s=suffixes[Math.floor(Math.random()*suffixes.length)];
-  const name=p+m+(Math.random()>0.4?s:'');
-  const desig=Math.random()>0.5?' '+String.fromCharCode(65+Math.floor(Math.random()*8))+'-'+Math.floor(Math.random()*900+100):'';
-  return name+desig;
-}
 
 // ── Scene ──
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.1,1000);
 camera.position.set(0,0,3.5);
-
 const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 document.body.appendChild(renderer.domElement);
 
 const sunDir=new THREE.Vector3(1,0.3,0.5).normalize();
-let seed=Math.random()*1000;
 
-// Planet
 const planetMat=new THREE.ShaderMaterial({
   vertexShader:planetVert,fragmentShader:planetFrag,
   uniforms:{
-    uTime:{value:0},uSeed:{value:seed},uSeaLevel:{value:0.42},
-    uTerrainScale:{value:1.0},uRoughness:{value:0.5},uSunDir:{value:sunDir}
+    uTime:{value:0},uSeed:{value:42},uSeaLevel:{value:0.42},
+    uTerrainScale:{value:1.0},uRoughness:{value:0.5},uSunDir:{value:sunDir},
+    uColorLo:{value:new THREE.Vector3(0.25,0.45,0.25)},
+    uColorMid:{value:new THREE.Vector3(0.15,0.35,0.15)},
+    uColorHi:{value:new THREE.Vector3(0.35,0.50,0.30)},
+    uColorAccent:{value:new THREE.Vector3(0.3,0.5,0.3)}
   }
 });
 const planet=new THREE.Mesh(new THREE.SphereGeometry(1,128,128),planetMat);
 scene.add(planet);
 
-// Clouds
 const cloudMat=new THREE.ShaderMaterial({
   vertexShader:cloudVert,fragmentShader:cloudFrag,transparent:true,depthWrite:false,
-  uniforms:{
-    uTime:{value:0},uSeed:{value:seed},uCloudDensity:{value:0.5},uSunDir:{value:sunDir}
-  }
+  uniforms:{uTime:{value:0},uSeed:{value:42},uCloudDensity:{value:0.5},uSunDir:{value:sunDir}}
 });
 const clouds=new THREE.Mesh(new THREE.SphereGeometry(1.015,96,96),cloudMat);
 scene.add(clouds);
 
-// Atmosphere
 const atmoMat=new THREE.ShaderMaterial({
   vertexShader:atmoVert,fragmentShader:atmoFrag,transparent:true,depthWrite:false,
   side:THREE.BackSide,
-  uniforms:{uSunDir:{value:sunDir},uAtmoIntensity:{value:0.7}}
+  uniforms:{uSunDir:{value:sunDir},uAtmoIntensity:{value:0.7},
+    uAtmoColor:{value:new THREE.Vector3(0.3,0.5,1.0)}}
 });
 scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.12,64,64),atmoMat));
 
-// Stars
-const starMat=new THREE.ShaderMaterial({
-  vertexShader:starsVert,fragmentShader:starsFrag,side:THREE.BackSide
-});
-scene.add(new THREE.Mesh(new THREE.SphereGeometry(100,32,32),starMat));
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(100,32,32),
+  new THREE.ShaderMaterial({vertexShader:starsVert,fragmentShader:starsFrag,side:THREE.BackSide})));
 
-// ── Orbit Controls (manual) ──
+// ── Camera Controls ──
 let isDragging=false,prevMouse={x:0,y:0};
-let rotX=0.3,rotY=0,targetRotX=0.3,targetRotY=0;
-let zoom=3.5,targetZoom=3.5;
-let autoRotSpeed=1.0;
+let rotX=0.3,rotY=0,tRotX=0.3,tRotY=0;
+let zoom=3.5,tZoom=3.5,autoRot=1.0;
 
 renderer.domElement.addEventListener('pointerdown',e=>{
   isDragging=true;prevMouse={x:e.clientX,y:e.clientY};
@@ -396,122 +432,194 @@ renderer.domElement.addEventListener('pointerdown',e=>{
 });
 addEventListener('pointermove',e=>{
   if(!isDragging)return;
-  targetRotY+=(e.clientX-prevMouse.x)*0.005;
-  targetRotX+=(e.clientY-prevMouse.y)*0.005;
-  targetRotX=Math.max(-Math.PI/2,Math.min(Math.PI/2,targetRotX));
+  tRotY+=(e.clientX-prevMouse.x)*0.005;
+  tRotX+=(e.clientY-prevMouse.y)*0.005;
+  tRotX=Math.max(-Math.PI/2,Math.min(Math.PI/2,tRotX));
   prevMouse={x:e.clientX,y:e.clientY};
 });
 addEventListener('pointerup',()=>{isDragging=false;document.body.classList.remove('dragging');});
 renderer.domElement.addEventListener('wheel',e=>{
-  targetZoom+=e.deltaY*0.002;
-  targetZoom=Math.max(1.8,Math.min(8,targetZoom));
-  e.preventDefault();
+  tZoom+=e.deltaY*0.002;tZoom=Math.max(1.8,Math.min(8,tZoom));e.preventDefault();
 },{passive:false});
 
-// ── Touch support ──
-let lastTouchDist=0;
+// Touch
+let lastTD=0;
 renderer.domElement.addEventListener('touchstart',e=>{
-  if(e.touches.length===1){
-    isDragging=true;prevMouse={x:e.touches[0].clientX,y:e.touches[0].clientY};
-  }else if(e.touches.length===2){
-    lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
-      e.touches[0].clientY-e.touches[1].clientY);
+  if(e.touches.length===1){isDragging=true;prevMouse={x:e.touches[0].clientX,y:e.touches[0].clientY};}
+  else if(e.touches.length===2){
+    lastTD=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
   }
 },{passive:true});
 renderer.domElement.addEventListener('touchmove',e=>{
-  if(e.touches.length===1 && isDragging){
+  if(e.touches.length===1&&isDragging){
     const t=e.touches[0];
-    targetRotY+=(t.clientX-prevMouse.x)*0.005;
-    targetRotX+=(t.clientY-prevMouse.y)*0.005;
-    targetRotX=Math.max(-Math.PI/2,Math.min(Math.PI/2,targetRotX));
+    tRotY+=(t.clientX-prevMouse.x)*0.005;tRotX+=(t.clientY-prevMouse.y)*0.005;
+    tRotX=Math.max(-Math.PI/2,Math.min(Math.PI/2,tRotX));
     prevMouse={x:t.clientX,y:t.clientY};
   }else if(e.touches.length===2){
-    const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
-      e.touches[0].clientY-e.touches[1].clientY);
-    targetZoom+=(lastTouchDist-dist)*0.008;
-    targetZoom=Math.max(1.8,Math.min(8,targetZoom));
-    lastTouchDist=dist;
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    tZoom+=(lastTD-d)*0.008;tZoom=Math.max(1.8,Math.min(8,tZoom));lastTD=d;
   }
   e.preventDefault();
 },{passive:false});
 renderer.domElement.addEventListener('touchend',()=>{isDragging=false;});
 
-// ── Slider Bindings ──
-const sliders={
-  sea:{el:document.getElementById('s-sea'),vEl:document.getElementById('v-sea'),
-    apply:v=>{planetMat.uniforms.uSeaLevel.value=v}},
-  scale:{el:document.getElementById('s-scale'),vEl:document.getElementById('v-scale'),
-    apply:v=>{planetMat.uniforms.uTerrainScale.value=v}},
-  rough:{el:document.getElementById('s-rough'),vEl:document.getElementById('v-rough'),
-    apply:v=>{planetMat.uniforms.uRoughness.value=v}},
-  cloud:{el:document.getElementById('s-cloud'),vEl:document.getElementById('v-cloud'),
-    apply:v=>{cloudMat.uniforms.uCloudDensity.value=v}},
-  atmo:{el:document.getElementById('s-atmo'),vEl:document.getElementById('v-atmo'),
-    apply:v=>{atmoMat.uniforms.uAtmoIntensity.value=v}},
-  rot:{el:document.getElementById('s-rot'),vEl:document.getElementById('v-rot'),
-    apply:v=>{autoRotSpeed=v}}
-};
-for(const [k,s] of Object.entries(sliders)){
-  s.el.addEventListener('input',()=>{
-    const v=parseFloat(s.el.value);
-    s.vEl.textContent=v.toFixed(k==='sea'?2:1);
-    s.apply(v);
-  });
+// ── Apply planet params ──
+function applyParams(params){
+  const u=planetMat.uniforms;
+  u.uSeed.value=params.seed;
+  u.uTerrainScale.value=params.terrainScale;
+  u.uRoughness.value=params.roughness;
+  u.uSeaLevel.value=params.seaLevel;
+  u.uColorLo.value.set(...params.palette.lo);
+  u.uColorMid.value.set(...params.palette.mid);
+  u.uColorHi.value.set(...params.palette.hi);
+  u.uColorAccent.value.set(...params.palette.accent);
+  cloudMat.uniforms.uSeed.value=params.seed;
+  cloudMat.uniforms.uCloudDensity.value=params.clouds;
+  atmoMat.uniforms.uAtmoIntensity.value=params.atmo;
+  // Tint atmosphere based on primary language
+  const p=params.palette;
+  atmoMat.uniforms.uAtmoColor.value.set(
+    0.2+p.accent[0]*0.3, 0.3+p.accent[1]*0.3, 0.6+p.accent[2]*0.3
+  );
+  autoRot=params.rotSpeed;
 }
 
-// ── New Planet / Randomize ──
-window.newPlanet=function(){
-  seed=Math.random()*1000;
-  planetMat.uniforms.uSeed.value=seed;
-  cloudMat.uniforms.uSeed.value=seed;
-  document.getElementById('planet-name').textContent=genName();
-};
-window.randomizeAll=function(){
-  window.newPlanet();
-  const sets={
-    sea:[0.25+Math.random()*0.4,2],
-    scale:[0.4+Math.random()*2.2,1],
-    rough:[0.15+Math.random()*0.75,1],
-    cloud:[Math.random()*0.9,1],
-    atmo:[0.2+Math.random()*1.1,1],
-    rot:[0.3+Math.random()*2.2,1]
-  };
-  for(const [k,[v,dec]] of Object.entries(sets)){
-    sliders[k].el.value=v;
-    sliders[k].vEl.textContent=v.toFixed(dec);
-    sliders[k].apply(v);
+// ── Format numbers ──
+function fmt(n){
+  if(n>=1000000) return (n/1000000).toFixed(1)+'M';
+  if(n>=1000) return (n/1000).toFixed(1)+'K';
+  return n.toString();
+}
+
+// ── Update UI ──
+function showRepoInfo(repo, params){
+  const panel=document.getElementById('repo-panel');
+  document.getElementById('repo-name').innerHTML=
+    `<a href="${repo.html_url}" target="_blank">${repo.full_name}</a>`;
+  document.getElementById('repo-desc').textContent=repo.description||'';
+  document.getElementById('repo-stats').innerHTML=
+    `<span class="stat"><b>${fmt(repo.stargazers_count)}</b> stars</span>`+
+    `<span class="stat"><b>${fmt(repo.forks_count)}</b> forks</span>`+
+    `<span class="stat"><b>${fmt(repo.open_issues_count)}</b> issues</span>`+
+    `<span class="stat"><b>${fmt(repo.size)}</b> KB</span>`;
+
+  // Language bar
+  const bar=document.getElementById('lang-bar');
+  const legend=document.getElementById('lang-legend');
+  const total=params.langEntries.reduce((s,e)=>s+e[1],0);
+  if(total>0){
+    bar.innerHTML=params.langEntries.slice(0,8).map(([lang,bytes])=>{
+      const pct=(bytes/total*100).toFixed(1);
+      const color=LANG_COLORS[lang]||LANG_COLORS.default;
+      return `<div style="width:${pct}%;background:${color}" title="${lang} ${pct}%"></div>`;
+    }).join('');
+    legend.innerHTML=params.langEntries.slice(0,5).map(([lang,bytes])=>{
+      const pct=(bytes/total*100).toFixed(1);
+      const color=LANG_COLORS[lang]||LANG_COLORS.default;
+      return `<span style="color:${color}">\u25CF</span> ${lang} ${pct}%`;
+    }).join(' &nbsp; ');
+  }else{
+    bar.innerHTML='';legend.innerHTML='<span style="color:rgba(255,255,255,.3)">no language data</span>';
+  }
+
+  document.getElementById('planet-label').textContent=
+    `Planet ${repo.full_name.replace('/','-').toUpperCase()} (seed ${params.seed.toFixed(0)})`;
+
+  document.getElementById('mappings').innerHTML=
+    `stars(${fmt(repo.stargazers_count)}) \u2192 terrain `+
+    `| forks(${fmt(repo.forks_count)}) \u2192 roughness `+
+    `| issues(${fmt(repo.open_issues_count)}) \u2192 sea level<br>`+
+    `size(${fmt(repo.size)}KB) \u2192 atmosphere `+
+    `| ${params.primaryLang||'?'} \u2192 biome colors `+
+    `| age \u2192 rotation`;
+
+  panel.classList.add('show');
+}
+
+// ── Fetch + Generate ──
+const input=document.getElementById('repo-input');
+const goBtn=document.getElementById('go-btn');
+const loadingEl=document.getElementById('loading');
+const errorEl=document.getElementById('error');
+
+async function fetchRepo(slug){
+  loadingEl.classList.add('show');
+  errorEl.classList.remove('show');
+  goBtn.disabled=true;
+  try{
+    const [repoRes,langRes]=await Promise.all([
+      fetch(`https://api.github.com/repos/${slug}`),
+      fetch(`https://api.github.com/repos/${slug}/languages`)
+    ]);
+    if(!repoRes.ok){
+      const msg=repoRes.status===404?`Repo "${slug}" not found. Check the name and make sure it's public.`
+        :repoRes.status===403?'GitHub API rate limit hit. Wait a minute and try again.'
+        :`GitHub API error: ${repoRes.status}`;
+      throw new Error(msg);
+    }
+    const repo=await repoRes.json();
+    const languages=langRes.ok?await langRes.json():{};
+    return {repo,languages};
+  }finally{
+    loadingEl.classList.remove('show');
+    goBtn.disabled=false;
+  }
+}
+
+window.loadRepo=async function(){
+  const slug=input.value.trim().replace(/^https?:\/\/(www\.)?github\.com\//,'').replace(/\/$/,'');
+  if(!slug||!slug.includes('/')){
+    errorEl.textContent='Enter a repo as owner/repo (e.g. torvalds/linux)';
+    errorEl.classList.add('show');return;
+  }
+  try{
+    const {repo,languages}=await fetchRepo(slug);
+    const params=mapRepoToPlanet(repo,languages);
+    applyParams(params);
+    showRepoInfo(repo,params);
+    // Update URL hash for sharing
+    history.replaceState(null,'','#'+repo.full_name);
+    errorEl.classList.remove('show');
+  }catch(e){
+    errorEl.textContent=e.message;
+    errorEl.classList.add('show');
   }
 };
+window.tryRepo=function(slug){
+  input.value=slug;
+  window.loadRepo();
+};
 
-document.getElementById('planet-name').textContent=genName();
+// Enter key
+input.addEventListener('keydown',e=>{if(e.key==='Enter')window.loadRepo();});
+
+// Load from URL hash on page load
+if(location.hash.length>1){
+  const slug=decodeURIComponent(location.hash.slice(1));
+  input.value=slug;
+  window.loadRepo();
+}
 
 // ── Resize ──
 addEventListener('resize',()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
   renderer.setSize(innerWidth,innerHeight);
 });
 
 // ── Render Loop ──
-let lastT=0,fpsFrames=0,fpsTime=0;
+let lastT=0,fpsF=0,fpsT=0;
 const fpsEl=document.getElementById('fps');
 
 function animate(t){
   requestAnimationFrame(animate);
-  const dt=(t-lastT)*0.001;
-  lastT=t;
+  const dt=(t-lastT)*0.001;lastT=t;
+  fpsF++;fpsT+=dt;
+  if(fpsT>=1){fpsEl.textContent=Math.round(fpsF/fpsT)+' fps';fpsF=0;fpsT=0;}
 
-  fpsFrames++;fpsTime+=dt;
-  if(fpsTime>=1){
-    fpsEl.textContent=Math.round(fpsFrames/fpsTime)+' fps';
-    fpsFrames=0;fpsTime=0;
-  }
-
-  // Smooth camera interpolation
-  rotX+=(targetRotX-rotX)*0.08;
-  rotY+=(targetRotY-rotY)*0.08;
-  zoom+=(targetZoom-zoom)*0.08;
-  if(!isDragging) targetRotY+=autoRotSpeed*0.003;
+  rotX+=(tRotX-rotX)*0.08;rotY+=(tRotY-rotY)*0.08;zoom+=(tZoom-zoom)*0.08;
+  if(!isDragging)tRotY+=autoRot*0.003;
 
   camera.position.x=Math.sin(rotY)*Math.cos(rotX)*zoom;
   camera.position.y=Math.sin(rotX)*zoom;
@@ -521,7 +629,7 @@ function animate(t){
   const time=t*0.001;
   planetMat.uniforms.uTime.value=time;
   cloudMat.uniforms.uTime.value=time;
-  clouds.rotation.y=time*0.008*autoRotSpeed;
+  clouds.rotation.y=time*0.008*autoRot;
 
   renderer.render(scene,camera);
 }
